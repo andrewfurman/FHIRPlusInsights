@@ -46,18 +46,36 @@
             background: #f5f5f5;
             display: none;
         }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .edit-button {
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="panel">
-        <h2>FireJSON Health History</h2>
+        <div class="panel-header">
+            <h2>FireJSON Health History</h2>
+            <button id="editButton" class="edit-button">✏️ Edit</button>
+        </div>
         <div class="content">
             <pre><code id="jsonDisplay" class="language-json display-view"></code></pre>
             <textarea id="jsonEdit" class="edit-view"></textarea>
         </div>
     </div>
     <div class="panel">
-        <h2>Insights from Medical Record</h2>
+        <div class="panel-header">
+            <h2>Insights from Medical Record</h2>
+        </div>
         <div class="content">
             <div id="markdownDisplay" class="display-view"></div>
             <textarea id="markdownEdit" class="edit-view"></textarea>
@@ -101,37 +119,37 @@
         markdownEdit.value = initialMarkdown;
         updateMarkdownDisplay(initialMarkdown);
 
-        // Click handlers for display views
-        jsonDisplay.addEventListener('click', () => {
-            jsonDisplay.style.display = 'none';
-            jsonEdit.style.display = 'block';
-            jsonEdit.focus();
-        });
+        const editButton = document.getElementById('editButton');
+        let isEditing = false;
 
-        markdownDisplay.addEventListener('click', () => {
-            markdownDisplay.style.display = 'none';
-            markdownEdit.style.display = 'block';
-            markdownEdit.focus();
-        });
-
-        // Enter key handlers for edit views
-        jsonEdit.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && e.shiftKey) {
-                e.preventDefault();
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            
+            if (isEditing) {
+                // Switch to edit mode
+                editButton.textContent = "💾 Save";
+                jsonDisplay.style.display = 'none';
+                jsonEdit.style.display = 'block';
+                markdownDisplay.style.display = 'none';
+                markdownEdit.style.display = 'block';
+                jsonEdit.focus();
+            } else {
+                // Switch to display mode
+                editButton.textContent = "✏️ Edit";
+                
+                // Update and render JSON
                 updateJsonDisplay(jsonEdit.value);
                 jsonEdit.style.display = 'none';
                 jsonDisplay.style.display = 'block';
-            }
-        });
-
-        markdownEdit.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && e.shiftKey) {
-                e.preventDefault();
+                
+                // Update and render Markdown
                 updateMarkdownDisplay(markdownEdit.value);
                 markdownEdit.style.display = 'none';
                 markdownDisplay.style.display = 'block';
             }
-        });
+        }
+
+        editButton.addEventListener('click', toggleEditMode);
     </script>
 </body>
 </html>
