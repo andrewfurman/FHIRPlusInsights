@@ -3,8 +3,9 @@
 <html>
 <head>
     <title>Health Records Viewer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
@@ -103,7 +104,8 @@
             try {
                 const formatted = typeof json === 'string' ? JSON.parse(json) : json;
                 jsonDisplay.textContent = JSON.stringify(formatted, null, 2);
-                hljs.highlightElement(jsonDisplay);
+                jsonDisplay.removeAttribute('data-highlighted');
+                hljs.highlightElement(jsonDisplay, { language: 'json' });
             } catch (e) {
                 jsonDisplay.textContent = json;
             }
