@@ -32,23 +32,19 @@
             overflow-y: auto;
             background: #f5f5f5;
         }
-        #jsonContent {
+        .display-view {
+            cursor: pointer;
             white-space: pre-wrap;
             font-family: monospace;
         }
-        #markdownContent {
-            height: 50%;
+        .edit-view {
             width: 100%;
+            height: 100%;
             resize: none;
             border: none;
             font-family: monospace;
             background: #f5f5f5;
-        }
-        #markdownPreview {
-            height: 50%;
-            overflow-y: auto;
-            border-top: 1px solid #ccc;
-            padding: 10px;
+            display: none;
         }
     </style>
 </head>
@@ -56,38 +52,85 @@
     <div class="panel">
         <h2>FireJSON Health History</h2>
         <div class="content">
-            <pre><code id="jsonContent" class="language-json"></code></pre>
+            <pre><code id="jsonDisplay" class="language-json display-view"></code></pre>
+            <textarea id="jsonEdit" class="edit-view"></textarea>
         </div>
     </div>
     <div class="panel">
         <h2>Insights from Medical Record</h2>
         <div class="content">
-            <textarea id="markdownContent" placeholder="Enter markdown text here..."></textarea>
-            <div id="markdownPreview"></div>
+            <div id="markdownDisplay" class="display-view"></div>
+            <textarea id="markdownEdit" class="edit-view"></textarea>
         </div>
     </div>
     <script>
-        // Initialize highlight.js
-        hljs.highlightAll();
-
-        // Setup markdown preview
-        const markdownContent = document.getElementById('markdownContent');
-        const markdownPreview = document.getElementById('markdownPreview');
-        const jsonContent = document.getElementById('jsonContent');
-
-        // Example JSON to show formatting
-        jsonContent.textContent = JSON.stringify({
+        // Initial example data
+        const initialJson = {
             "patient": {
                 "name": "John Doe",
                 "age": 45,
                 "history": []
             }
-        }, null, 2);
-        hljs.highlightElement(jsonContent);
+        };
+        const initialMarkdown = "## Patient Notes\n- Initial consultation\n- No major concerns";
 
-        // Update markdown preview on input
-        markdownContent.addEventListener('input', function() {
-            markdownPreview.innerHTML = marked.parse(this.value);
+        // Elements
+        const jsonDisplay = document.getElementById('jsonDisplay');
+        const jsonEdit = document.getElementById('jsonEdit');
+        const markdownDisplay = document.getElementById('markdownDisplay');
+        const markdownEdit = document.getElementById('markdownEdit');
+
+        // Initialize displays
+        function updateJsonDisplay(json) {
+            try {
+                const formatted = typeof json === 'string' ? JSON.parse(json) : json;
+                jsonDisplay.textContent = JSON.stringify(formatted, null, 2);
+                hljs.highlightElement(jsonDisplay);
+            } catch (e) {
+                jsonDisplay.textContent = json;
+            }
+        }
+
+        function updateMarkdownDisplay(text) {
+            markdownDisplay.innerHTML = marked.parse(text);
+        }
+
+        // Set initial content
+        jsonEdit.value = JSON.stringify(initialJson, null, 2);
+        updateJsonDisplay(initialJson);
+        markdownEdit.value = initialMarkdown;
+        updateMarkdownDisplay(initialMarkdown);
+
+        // Click handlers for display views
+        jsonDisplay.addEventListener('click', () => {
+            jsonDisplay.style.display = 'none';
+            jsonEdit.style.display = 'block';
+            jsonEdit.focus();
+        });
+
+        markdownDisplay.addEventListener('click', () => {
+            markdownDisplay.style.display = 'none';
+            markdownEdit.style.display = 'block';
+            markdownEdit.focus();
+        });
+
+        // Enter key handlers for edit views
+        jsonEdit.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                updateJsonDisplay(jsonEdit.value);
+                jsonEdit.style.display = 'none';
+                jsonDisplay.style.display = 'block';
+            }
+        });
+
+        markdownEdit.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                updateMarkdownDisplay(markdownEdit.value);
+                markdownEdit.style.display = 'none';
+                markdownDisplay.style.display = 'block';
+            }
         });
     </script>
 </body>
