@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Records Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            gap: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+        }
+        h2 {
+            margin: 0 0 10px 0;
+        }
+        .content {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+        #jsonContent {
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        #markdownContent {
+            height: 50%;
+            width: 100%;
+            resize: none;
+            border: none;
+            font-family: monospace;
+            background: #f5f5f5;
+        }
+        #markdownPreview {
+            height: 50%;
+            overflow-y: auto;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <h2>FireJSON Health History</h2>
+        <div class="content">
+            <pre><code id="jsonContent" class="language-json"></code></pre>
+        </div>
+    </div>
+    <div class="panel">
+        <h2>Insights from Medical Record</h2>
+        <div class="content">
+            <textarea id="markdownContent" placeholder="Enter markdown text here..."></textarea>
+            <div id="markdownPreview"></div>
+        </div>
+    </div>
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        // Setup markdown preview
+        const markdownContent = document.getElementById('markdownContent');
+        const markdownPreview = document.getElementById('markdownPreview');
+        const jsonContent = document.getElementById('jsonContent');
+
+        // Example JSON to show formatting
+        jsonContent.textContent = JSON.stringify({
+            "patient": {
+                "name": "John Doe",
+                "age": 45,
+                "history": []
+            }
+        }, null, 2);
+        hljs.highlightElement(jsonContent);
+
+        // Update markdown preview on input
+        markdownContent.addEventListener('input', function() {
+            markdownPreview.innerHTML = marked.parse(this.value);
+        });
+    </script>
+</body>
+</html>
